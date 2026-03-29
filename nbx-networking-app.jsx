@@ -399,11 +399,7 @@ const DiscoverScreen = ({ onNav }) => {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: 812, position: "relative" }}>
       <StatusBar />
-      <AppHeader title="Connect" right={
-        <div style={{ width: 36, height: 36, borderRadius: 12, background: C.surface, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid " + C.border }}>
-          <Filter size={18} color={C.muted} />
-        </div>
-      } />
+      <AppHeader title="Connect" />
       <div style={{ display: "flex", gap: 6, padding: "0 20px 12px" }}>
         {["discover", "connected", "requests"].map(t => (
           <button key={t} onClick={() => setTab(t)} style={{

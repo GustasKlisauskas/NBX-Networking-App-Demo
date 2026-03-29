@@ -12,6 +12,16 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: #12121E;
+  background-image:
+    linear-gradient(rgba(30,30,48,0.6) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30,30,48,0.6) 1px, transparent 1px),
+    linear-gradient(rgba(37,37,64,0.4) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,37,64,0.4) 1px, transparent 1px);
+  background-size:
+    100px 100px,
+    100px 100px,
+    20px 20px,
+    20px 20px;
 }
 
 #root {

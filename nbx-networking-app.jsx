@@ -1364,8 +1364,9 @@ export default function App() {
   const screens = { home: HomeScreen, discover: DiscoverScreen, schedule: ScheduleScreen, chat: ChatScreen, profile: ProfileScreen };
   const Screen = screens[screen];
   return (
-    <div style={{ minHeight: "100vh", background: "#12121E", display: "flex", flexDirection: "column", alignItems: "center", padding: "30px 20px", fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#12121E", display: "flex", flexDirection: "column", alignItems: "center", padding: "30px 5%", fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif", boxSizing: "border-box" }}>
       <ScrollHideStyle />
+      <style>{`@media(max-width:500px){.nbx-phone{width:100%!important;height:auto!important;aspect-ratio:375/812;}}`}</style>
       <div style={{ textAlign: "center", marginBottom: 28 }}>
         <div style={{ color: "#E8E8EF", fontSize: 26, fontWeight: 800 }}>NBX Connect</div>
         <div style={{ color: "#6B6B82", fontSize: 14, marginTop: 4 }}>Networking App · Mobile UX Design</div>
@@ -1375,7 +1376,7 @@ export default function App() {
           <button key={s.id} onClick={() => navigate(s.id)} style={{ padding: "8px 20px", borderRadius: 24, border: "none", cursor: "pointer", background: screen === s.id ? "#EA0030" : "rgba(255,255,255,0.06)", color: screen === s.id ? "#fff" : "#9E9EB3", fontSize: 13, fontWeight: 700 }}>{s.label}</button>
         ))}
       </div>
-      <div style={{ width: 375, height: 812, borderRadius: 44, overflow: "hidden", background: C.bg, position: "relative", boxShadow: "0 25px 60px rgba(0,0,0,0.5), 0 0 0 3px rgba(255,255,255,0.08)" }}>
+      <div className="nbx-phone" style={{ width: 375, maxWidth: "100%", height: 812, borderRadius: 44, overflow: "hidden", background: C.bg, position: "relative", boxShadow: "0 25px 60px rgba(0,0,0,0.5), 0 0 0 3px rgba(255,255,255,0.08)" }}>
         <Screen onNav={navigate} chatTabHint={chatTabHint} profileData={profileData} setProfileData={setProfileData} />
       </div>
       <a href="https://beawhale.io" target="_blank" rel="noopener noreferrer" style={{ color: "#4A4A5C", fontSize: 11, marginTop: 20, textDecoration: "none", cursor: "pointer" }}>Built By BeAWhale</a>

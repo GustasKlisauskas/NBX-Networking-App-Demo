@@ -4,7 +4,6 @@ dist/
 
 # Dependencies
 node_modules/
-package-lock.json
 yarn.lock
 
 # IDE
@@ -22,3 +21,9 @@ yarn.lock
 
 # Build
 *.log
+
+# Vite timestamp files
+vite.config.js.timestamp-*
+
+# Temp
+dist2/

@@ -216,7 +216,7 @@ const RescheduleModal = ({ person, onClose, onConfirm }) => {
 };
 // HOME SCREEN
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
-const HomeScreen = ({ onNav, profileData }) => {
+const HomeScreen = ({ onNav, profileData, onAction }) => {
   const [agendaDay, setAgendaDay] = useState(0);
   const [reschedule, setReschedule] = useState(null);
   const [bellMuted, setBellMuted] = useState(false);
@@ -244,9 +244,9 @@ const HomeScreen = ({ onNav, profileData }) => {
         {/* Stats 2x2 Grid */}
         <div style={{ display: "flex", gap: 10, padding: "4px 20px 18px" }}>
           {[
-            { num: "5", label: "Meetings", icon: Calendar, color: C.green, action: () => onNav("schedule") },
-            { num: "3", label: "Connections", icon: UserPlus, color: C.pink, action: () => onNav("chat") },
-            { num: "3", label: "New Requests", icon: Clock, color: C.amber, action: () => onNav("chat", { chatTab: "requests" }) },
+            { num: "5", label: "Meetings", icon: Calendar, color: C.green, action: () => { if(onAction) onAction("view-stats"); onNav("schedule"); } },
+            { num: "3", label: "Connections", icon: UserPlus, color: C.pink, action: () => { if(onAction) onAction("view-stats"); onNav("chat"); } },
+            { num: "3", label: "New Requests", icon: Clock, color: C.amber, action: () => { if(onAction) onAction("view-stats"); onNav("chat", { chatTab: "requests" }); } },
           ].map((s, i) => (
             <div key={i} onClick={s.action} style={{ flex: 1, background: C.surface, borderRadius: 14, padding: "12px", border: "1px solid " + C.border, cursor: "pointer" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
@@ -267,7 +267,7 @@ const HomeScreen = ({ onNav, profileData }) => {
               </div>
               <span style={{ color: C.white, fontSize: 15, fontWeight: 700 }}>Up Next</span>
             </div>
-            <button onClick={() => onNav("schedule")} style={{ background: "none", border: "none", cursor: "pointer", color: C.red, fontSize: 12, fontWeight: 600 }}>All Meetings</button>
+            <button onClick={() => { onNav("schedule"); if(onAction) onAction("view-upcoming"); }} style={{ background: "none", border: "none", cursor: "pointer", color: C.red, fontSize: 12, fontWeight: 600 }}>All Meetings</button>
           </div>
           {[
             { name: "Mark Teller", role: "Venture Partner", org: "Pantera Capital", photo: FACE1, time: "10:00", end: "10:30", location: "Lounge B, Table 4", status: "confirmed" },
@@ -307,12 +307,12 @@ const HomeScreen = ({ onNav, profileData }) => {
               </div>
               <span style={{ color: C.white, fontSize: 15, fontWeight: 700 }}>Agenda</span>
             </div>
-            <button onClick={() => onNav("schedule")} style={{ background: "none", border: "none", cursor: "pointer", color: C.red, fontSize: 12, fontWeight: 600 }}>See All</button>
+            <button onClick={() => { onNav("schedule"); if(onAction) onAction("view-agenda"); }} style={{ background: "none", border: "none", cursor: "pointer", color: C.red, fontSize: 12, fontWeight: 600 }}>See All</button>
           </div>
 
           <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
             {["Day 1 · Mar 24", "Day 2 · Mar 25"].map((d, i) => (
-              <button key={i} onClick={() => setAgendaDay(i)} style={{
+              <button key={i} onClick={() => { setAgendaDay(i); if(onAction) onAction("view-agenda"); }} style={{
                 flex: 1, padding: "9px", borderRadius: 10, border: "none", cursor: "pointer",
                 background: agendaDay === i ? C.red : C.surface,
                 color: agendaDay === i ? C.white : C.muted,
@@ -381,8 +381,9 @@ const CONNECTED_PEOPLE = [
   { id: 5, name: "Lina Zhao", role: "VP of Ecosystem", org: "Polygon Labs", photo: FACE8, bio: "Scaling Polygon's ecosystem partnerships globally." },
 ];
 
-const DiscoverScreen = ({ onNav }) => {
+const DiscoverScreen = ({ onNav, onSubTab, onAction }) => {
   const [tab, setTab] = useState("discover");
+  React.useEffect(() => { if (onSubTab) onSubTab(tab); }, [tab]);
   const [activeFilter, setActiveFilter] = useState("All");
   const [requested, setRequested] = useState({});
   const [reschedule, setReschedule] = useState(null);
@@ -413,7 +414,7 @@ const DiscoverScreen = ({ onNav }) => {
         <>
           <div style={{ display: "flex", gap: 8, padding: "0 20px 12px" }}>
             {filters.map(f => (
-              <button key={f} onClick={() => setActiveFilter(f)} style={{
+              <button key={f} onClick={() => { setActiveFilter(f); if(onAction) onAction("filter-role"); }} style={{
                 flex: 1, padding: "6px 0", borderRadius: 20, border: "none", cursor: "pointer",
                 fontSize: 11, fontWeight: 600, textAlign: "center",
                 background: activeFilter === f ? C.pink : C.surface,
@@ -447,7 +448,7 @@ const DiscoverScreen = ({ onNav }) => {
                       <span style={{ color: C.muted, fontSize: 13, fontWeight: 600 }}>Requested</span>
                     </div>
                   ) : (
-                    <button onClick={() => setRequested(prev => ({ ...prev, [p.id]: true }))} style={{
+                    <button onClick={() => { setRequested(prev => ({ ...prev, [p.id]: true })); if(onAction) onAction("send-connect"); }} style={{
                       width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                       padding: "10px", borderRadius: 12, border: "none", cursor: "pointer",
                       background: C.red, color: C.white, fontSize: 13, fontWeight: 700,
@@ -474,14 +475,14 @@ const DiscoverScreen = ({ onNav }) => {
               </div>
               <div style={{ color: C.dim, fontSize: 11.5, marginTop: 8, lineHeight: 1.45 }}>{p.bio}</div>
               <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-                <button onClick={() => setReschedule({ name: p.name, photo: p.photo, role: p.role, org: p.org })} style={{
+                <button onClick={() => { setReschedule({ name: p.name, photo: p.photo, role: p.role, org: p.org }); if(onAction) onAction("schedule-meeting"); }} style={{
                   flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                   padding: "10px", borderRadius: 12, border: "none", cursor: "pointer",
                   background: C.red, color: C.white, fontSize: 13, fontWeight: 700,
                 }}>
                   <Calendar size={15} /> Schedule
                 </button>
-                <button onClick={() => onNav("chat")} style={{
+                <button onClick={() => { onNav("chat"); if(onAction) onAction("start-chat"); }} style={{
                   width: 42, height: 40, display: "flex", alignItems: "center", justifyContent: "center",
                   borderRadius: 12, border: "1px solid " + C.border, background: C.card, cursor: "pointer",
                 }}>
@@ -534,11 +535,11 @@ const DiscoverScreen = ({ onNav }) => {
                   </div>
                 ) : (
                   <div style={{ display: "flex", gap: 6, marginTop: 12 }}>
-                    <button onClick={() => handleConnReq(r.name, "declined")} style={{
+                    <button onClick={() => { handleConnReq(r.name, "declined"); if(onAction) onAction("accept-decline"); }} style={{
                       width: 42, height: 42, borderRadius: 12, border: "1px solid " + C.border, cursor: "pointer",
                       background: C.card, display: "flex", alignItems: "center", justifyContent: "center", padding: 0,
                     }}><X size={18} color={C.muted} /></button>
-                    <button onClick={() => handleConnReq(r.name, "accepted")} style={{
+                    <button onClick={() => { handleConnReq(r.name, "accepted"); if(onAction) onAction("accept-decline"); }} style={{
                       flex: 1, padding: "10px 0", borderRadius: 12, border: "none", cursor: "pointer",
                       background: C.green + "20", color: C.green, fontSize: 13, fontWeight: 700,
                       display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
@@ -557,9 +558,10 @@ const DiscoverScreen = ({ onNav }) => {
 };
 
 // MEETINGS SCREEN
-const ScheduleScreen = ({ onNav }) => {
+const ScheduleScreen = ({ onNav, onSubTab, onAction }) => {
   const [activeDay, setActiveDay] = useState(0);
   const [reschedule, setReschedule] = useState(null);
+  React.useEffect(() => { if (onSubTab) onSubTab(reschedule ? "reschedule" : "meetings"); }, [reschedule]);
   const [cancelMeeting, setCancelMeeting] = useState(null);
   const [removedMeetings, setRemovedMeetings] = useState({});
   const day1 = [
@@ -608,9 +610,9 @@ const ScheduleScreen = ({ onNav }) => {
             </div>
           </div>
           <div style={{ display: "flex", gap: 6, marginTop: 12 }}>
-            <button onClick={() => setCancelMeeting(m)} style={{ width: "20%", height: 36, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 10, border: "none", cursor: "pointer", background: C.card, color: C.dim, flexShrink: 0 }}><X size={16} /></button>
-            <button onClick={() => setReschedule(m)} style={{ width: "40%", height: 36, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 10, border: "none", cursor: "pointer", background: C.red + "15", color: C.red, flexShrink: 0 }}><Calendar size={16} /></button>
-            <button style={{ width: "40%", height: 36, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 10, border: "none", cursor: "pointer", background: C.pink + "15", color: C.pink, flexShrink: 0 }}><MessageCircle size={16} /></button>
+            <button onClick={() => { setCancelMeeting(m); if(onAction) onAction("card-action"); }} style={{ width: "20%", height: 36, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 10, border: "none", cursor: "pointer", background: C.card, color: C.dim, flexShrink: 0 }}><X size={16} /></button>
+            <button onClick={() => { setReschedule(m); if(onAction) onAction("card-action"); }} style={{ width: "40%", height: 36, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 10, border: "none", cursor: "pointer", background: C.red + "15", color: C.red, flexShrink: 0 }}><Calendar size={16} /></button>
+            <button onClick={() => { onNav("chat", { chatTab: "connected", openChat: m.name }); if(onAction) onAction("card-action"); }} style={{ width: "40%", height: 36, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 10, border: "none", cursor: "pointer", background: C.pink + "15", color: C.pink, flexShrink: 0 }}><MessageCircle size={16} /></button>
           </div>
         </div>
         {!isPending && i < list.length-1 && gap > 0 && (
@@ -632,7 +634,7 @@ const ScheduleScreen = ({ onNav }) => {
       <AppHeader title="Meetings" right={<Avatar src={GUS} size={32} ring={C.red} />} />
       <div style={{ display: "flex", gap: 8, padding: "0 20px 12px" }}>
         {["Mar 24", "Mar 25"].map((d, i) => (
-          <button key={i} onClick={() => setActiveDay(i)} style={{ flex: 1, padding: "10px", borderRadius: 12, border: "none", cursor: "pointer", background: activeDay === i ? C.red : C.surface, color: activeDay === i ? C.white : C.muted, fontSize: 13, fontWeight: 700 }}>Day {i+1} · {d}</button>
+          <button key={i} onClick={() => { setActiveDay(i); if(onAction) onAction("toggle-day"); }} style={{ flex: 1, padding: "10px", borderRadius: 12, border: "none", cursor: "pointer", background: activeDay === i ? C.red : C.surface, color: activeDay === i ? C.white : C.muted, fontSize: 13, fontWeight: 700 }}>Day {i+1} · {d}</button>
         ))}
       </div>
       <div style={{ padding: "4px 20px 0", display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
@@ -789,9 +791,10 @@ const CONNECTION_REQUESTS = [
   { name: "Sofia Reyes", role: "Head of Partnerships", org: "Solana Foundation", photo: FACE4, time: "2h", note: "Hey Gus! Loved the BeAWhale booth. Let's chat about Solana grants." },
 ];
 
-const ChatScreen = ({ onNav, chatTabHint }) => {
+const ChatScreen = ({ onNav, chatTabHint, openChatHint, onSubTab, onAction }) => {
   const [chatTab, setChatTab] = useState(chatTabHint || "connected");
-  const [activeChat, setActiveChat] = useState(null);
+  const [activeChat, setActiveChat] = useState(openChatHint || null);
+  React.useEffect(() => { if (onSubTab) onSubTab(activeChat ? "individual" : chatTab); }, [chatTab, activeChat]);
   const [inputText, setInputText] = useState("");
   const [localMessages, setLocalMessages] = useState({});
   const [reschedule, setReschedule] = useState(null);
@@ -838,6 +841,7 @@ const ChatScreen = ({ onNav, chatTabHint }) => {
     const newMsg = { from: "me", text: inputText.trim(), time: timeStr };
     setLocalMessages(prev => ({ ...prev, [activeChat]: [...(prev[activeChat] || []), newMsg] }));
     setInputText("");
+    if (onAction) onAction("send-message");
   };
 
   const handleMeetingAction = (chatName, msgIndex, action, meetingData) => {
@@ -850,7 +854,7 @@ const ChatScreen = ({ onNav, chatTabHint }) => {
     }
     if (action === "rescheduled") {
       setReschedule({ name: chatName, photo: chatData[chatName]?.photo, role: chatData[chatName]?.role, org: chatData[chatName]?.org });
-      return; // don't mark bubble yet — handleScheduleConfirm will mark all old bubbles when user confirms
+      return; // don't mark bubble yet - handleScheduleConfirm will mark all old bubbles when user confirms
     }
   };
 
@@ -905,7 +909,7 @@ const ChatScreen = ({ onNav, chatTabHint }) => {
             const btnColor = s === "scheduled" ? C.green : s === "requested" ? C.amber : C.red;
             const btnBg = s === "scheduled" ? C.green + "15" : s === "requested" ? C.amber + "15" : C.red + "15";
             const btnLabel = s === "scheduled" ? "Booked" : s === "requested" ? "Pending" : "Schedule";
-            const btnAction = s ? () => setCancelConfirm(activeChat) : () => setReschedule({ name: activeChat, photo: data.photo, role: data.role, org: data.org });
+            const btnAction = s ? () => { setCancelConfirm(activeChat); if(onAction) onAction("view-status"); } : () => { setReschedule({ name: activeChat, photo: data.photo, role: data.role, org: data.org }); if(onAction) onAction("reschedule-chat"); };
             return (
               <button onClick={btnAction} style={{
                 padding: "7px 12px", borderRadius: 10, border: "none", cursor: "pointer",
@@ -958,9 +962,9 @@ const ChatScreen = ({ onNav, chatTabHint }) => {
                   meetingDay={m.meetingDay}
                   time={m.time}
                   status={meetingStatuses[statusKey]}
-                  onAccept={() => handleMeetingAction(activeChat, i, "accepted", { meetingDay: m.meetingDay, meetingTime: m.meetingTime })}
-                  onDecline={() => handleMeetingAction(activeChat, i, "declined")}
-                  onReschedule={() => handleMeetingAction(activeChat, i, "rescheduled", { meetingDay: m.meetingDay, meetingTime: m.meetingTime })}
+                  onAccept={() => { handleMeetingAction(activeChat, i, "accepted", { meetingDay: m.meetingDay, meetingTime: m.meetingTime }); if(onAction) onAction("manage-meeting"); }}
+                  onDecline={() => { handleMeetingAction(activeChat, i, "declined"); if(onAction) onAction("manage-meeting"); }}
+                  onReschedule={() => { handleMeetingAction(activeChat, i, "rescheduled", { meetingDay: m.meetingDay, meetingTime: m.meetingTime }); if(onAction) onAction("manage-meeting"); }}
                 />
               );
             }
@@ -1013,7 +1017,7 @@ const ChatScreen = ({ onNav, chatTabHint }) => {
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <div style={{ display: "flex", gap: 8 }}>
                   <button onClick={() => setCancelConfirm(null)} style={{ flex: 1, padding: "10px", borderRadius: 12, border: "1px solid " + C.border, cursor: "pointer", background: C.card, color: C.muted, fontSize: 13, fontWeight: 700 }}>Keep</button>
-                  <button onClick={() => { const name = cancelConfirm; setCancelConfirm(null); setReschedule({ name, photo: chatData[name].photo, role: chatData[name].role, org: chatData[name].org }); }} style={{ flex: 1, padding: "10px", borderRadius: 12, border: "none", cursor: "pointer", background: C.amber + "20", color: C.amber, fontSize: 13, fontWeight: 700 }}>Reschedule</button>
+                  <button onClick={() => { const name = cancelConfirm; setCancelConfirm(null); setReschedule({ name, photo: chatData[name].photo, role: chatData[name].role, org: chatData[name].org }); if(onAction) onAction("reschedule-chat"); }} style={{ flex: 1, padding: "10px", borderRadius: 12, border: "none", cursor: "pointer", background: C.amber + "20", color: C.amber, fontSize: 13, fontWeight: 700 }}>Reschedule</button>
                 </div>
                 <button onClick={() => { cancelAllMeetings(cancelConfirm); setCancelConfirm(null); }} style={{ width: "100%", padding: "12px", borderRadius: 12, border: "none", cursor: "pointer", background: C.red, color: C.white, fontSize: 14, fontWeight: 700 }}>{getSchedStatus(cancelConfirm) === "scheduled" ? "Cancel Meeting" : "Cancel Request"}</button>
               </div>
@@ -1061,7 +1065,7 @@ const ChatScreen = ({ onNav, chatTabHint }) => {
                     </button>
                     {sched && <span style={{ fontSize: 8, fontWeight: 600, color: btnColor }}>{sched === "scheduled" ? "Booked" : (incoming ? "Respond" : "Pending")}</span>}
                   </div>
-                  <div onClick={() => setActiveChat(c.name)} style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, cursor: "pointer", minWidth: 0 }}>
+                  <div onClick={() => { setActiveChat(c.name); if(onAction) onAction("view-conversations"); }} style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, cursor: "pointer", minWidth: 0 }}>
                     <Avatar src={chatData[c.name].photo} size={44} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -1152,11 +1156,11 @@ const ChatScreen = ({ onNav, chatTabHint }) => {
                   </div>
                 ) : (
                   <div style={{ display: "flex", gap: 6, marginTop: 12 }}>
-                    <button onClick={() => handleConnectionAction(r.name, "declined")} style={{
+                    <button onClick={() => { handleConnectionAction(r.name, "declined"); if(onAction) onAction("decline-chat"); }} style={{
                       width: 42, height: 42, borderRadius: 12, border: "1px solid " + C.border, cursor: "pointer",
                       background: C.card, display: "flex", alignItems: "center", justifyContent: "center", padding: 0,
                     }}><X size={18} color={C.muted} /></button>
-                    <button onClick={() => handleConnectionAction(r.name, "accepted")} style={{
+                    <button onClick={() => { handleConnectionAction(r.name, "accepted"); if(onAction) onAction("accept-chat"); }} style={{
                       flex: 1, padding: "10px 0", borderRadius: 12, border: "none", cursor: "pointer",
                       background: C.green + "20", color: C.green, fontSize: 13, fontWeight: 700,
                       display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
@@ -1227,7 +1231,7 @@ const ToggleChips = ({ all, selected, onToggle, color }) => (
 
 const AVATAR_OPTIONS = [GUS, FACE1, FACE2, FACE3, FACE4, FACE5, FACE6, FACE7, FACE8];
 
-const ProfileScreen = ({ onNav, profileData, setProfileData }) => {
+const ProfileScreen = ({ onNav, profileData, setProfileData, onAction }) => {
   const [editing, setEditing] = useState(false);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(GUS);
@@ -1248,7 +1252,7 @@ const ProfileScreen = ({ onNav, profileData, setProfileData }) => {
     <div style={{ display: "flex", flexDirection: "column", height: 812, position: "relative" }}>
       <StatusBar />
       <AppHeader title="Profile" right={
-        <button onClick={() => { if (editing) { setProfile(editDraft); setEditing(false); } else { setEditDraft(profile); setEditing(true); } }} style={{ padding: "7px 14px", borderRadius: 10, border: "none", cursor: "pointer", background: editing ? C.green + "20" : C.surface, color: editing ? C.green : C.muted, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 5 }}>
+        <button onClick={() => { if (editing) { setProfile(editDraft); setEditing(false); } else { setEditDraft(profile); setEditing(true); } if(onAction) onAction("edit-profile"); }} style={{ padding: "7px 14px", borderRadius: 10, border: "none", cursor: "pointer", background: editing ? C.green + "20" : C.surface, color: editing ? C.green : C.muted, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 5 }}>
           {editing ? <><Check size={14} /> Save</> : <><Settings size={14} /> Edit</>}
         </button>
       } />
@@ -1345,8 +1349,113 @@ const ScrollHideStyle = () => (
   <style dangerouslySetInnerHTML={{ __html: ".hide-scrollbar::-webkit-scrollbar{display:none}.hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}" }} />
 );
 
+const SCREEN_INFO = {
+  home: {
+    title: "Home Dashboard",
+    desc: "Your event command center - everything at a glance.",
+    bullets: [
+      "See your total meetings, connections, and pending requests",
+      "Up Next section with your upcoming meetings and locations",
+      "Full event agenda organized by day with speaker details",
+      "Quick navigation to any section from the bottom menu",
+    ],
+  },
+  "discover.discover": {
+    title: "Discover People",
+    desc: "Find and connect with the right people at the event.",
+    bullets: [
+      "Browse all attendees with match compatibility scores",
+      "Filter by role - Investors, Founders, or Developers",
+      "See bios, tags, and mutual connections at a glance",
+      "Send connection requests with one tap",
+    ],
+  },
+  "discover.connected": {
+    title: "My Connections",
+    desc: "Your accepted connections - ready to collaborate.",
+    bullets: [
+      "View everyone you've connected with",
+      "Schedule a meeting directly from a connection card",
+      "Start a chat conversation instantly",
+      "See role, company, and bio for each connection",
+    ],
+  },
+  "discover.requests": {
+    title: "Connection Requests",
+    desc: "Manage who wants to connect with you.",
+    bullets: [
+      "View incoming connection requests with personal messages",
+      "Accept or decline requests with one tap",
+      "See who sent the request and when",
+      "Accepted connections move to your Connected tab",
+    ],
+  },
+  "schedule.meetings": {
+    title: "Schedule & Meetings",
+    desc: "All your meetings organized by day.",
+    bullets: [
+      "Toggle between Day 1 and Day 2 of the event",
+      "See confirmed and pending meeting counts",
+      "View meeting time, location, and attendee details",
+      "Cancel, reschedule, or start a chat from each card",
+    ],
+  },
+  "schedule.reschedule": {
+    title: "Reschedule Meeting",
+    desc: "Pick a new time that works for both sides.",
+    bullets: [
+      "See all available time slots for both parties",
+      "Green 'Both free' indicators for open slots",
+      "Greyed-out busy slots so you don't double-book",
+      "Confirm the new time with a single tap",
+    ],
+  },
+  "chat.connected": {
+    title: "Chat - Conversations",
+    desc: "Your active message threads.",
+    bullets: [
+      "See all ongoing conversations with latest message preview",
+      "Unread message count badges on each thread",
+      "Meeting status labels - Booked, Respond, Pending",
+      "Quick access to schedule a meeting from any chat",
+    ],
+  },
+  "chat.requests": {
+    title: "Chat - Requests",
+    desc: "Incoming chat requests from new connections.",
+    bullets: [
+      "Review chat requests with personal intro messages",
+      "Accept to start a conversation",
+      "Decline requests you're not interested in",
+      "See who sent the request and how long ago",
+    ],
+  },
+  "chat.individual": {
+    title: "Individual Chat",
+    desc: "Full messaging with a connection.",
+    bullets: [
+      "Real-time messaging with read receipts and timestamps",
+      "Meeting request cards embedded in the conversation",
+      "Tap a meeting card to reschedule, keep, or cancel",
+      "Reschedule meetings directly from the chat header",
+      "Booking status shown in the chat header",
+    ],
+  },
+  profile: {
+    title: "Your Profile",
+    desc: "Your networking identity at the event.",
+    bullets: [
+      "Display your name, title, company, and bio",
+      "Showcase your interests and what you're looking for",
+      "Edit profile details on the fly",
+      "VIP pass with scannable QR code for event entry",
+    ],
+  },
+};
+
 export default function App() {
   const [screen, setScreen] = useState("home");
+  const [subTab, setSubTab] = useState(null);
   const [chatTabHint, setChatTabHint] = useState(null);
   const [profileData, setProfileData] = useState({
     name: "Gus Klisauskas",
@@ -1356,9 +1465,13 @@ export default function App() {
     interests: ["DeFi", "NFTs", "Web3 Design", "Smart Contracts", "Tokenomics", "UX/UI"],
     lookingFor: ["Investors", "Technical Partners", "Protocol Teams"],
   });
-  const navigate = (s, opts) => { if (opts && opts.chatTab) setChatTabHint(opts.chatTab); else setChatTabHint(null); setScreen(s); };
+  const [openChatHint, setOpenChatHint] = useState(null);
+  const navigate = (s, opts) => { if (opts && opts.chatTab) setChatTabHint(opts.chatTab); else setChatTabHint(null); if (opts && opts.openChat) setOpenChatHint(opts.openChat); else setOpenChatHint(null); setSubTab(null); setScreen(s); };
   const phoneRef = React.useRef(null);
   const [phoneScale, setPhoneScale] = useState(1);
+  const [showPanel, setShowPanel] = useState(false);
+  const [panelAnim, setPanelAnim] = useState(false);
+  const prevInfoKey = React.useRef(null);
   React.useEffect(() => {
     const update = () => {
       if (phoneRef.current) {
@@ -1366,17 +1479,60 @@ export default function App() {
         const wrapW = wrap.getBoundingClientRect().width;
         setPhoneScale(Math.min(1, wrapW / 375));
       }
+      setShowPanel(window.innerWidth >= 900);
     };
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
   }, []);
+  // Determine info key
+  const infoKey = (screen === "discover" || screen === "schedule" || screen === "chat") && subTab
+    ? `${screen}.${subTab}` : screen;
+  const info = SCREEN_INFO[infoKey] || SCREEN_INFO[screen] || SCREEN_INFO.home;
+  React.useEffect(() => {
+    if (prevInfoKey.current !== infoKey) {
+      setPanelAnim(true);
+      const t = setTimeout(() => setPanelAnim(false), 400);
+      prevInfoKey.current = infoKey;
+      return () => clearTimeout(t);
+    }
+  }, [infoKey]);
+  // Action-to-bullet mapping
+  const ACTION_MAP = {
+    "home": { "view-stats": 0, "view-upcoming": 1, "view-agenda": 2, "nav-click": 3 },
+    "discover.discover": { "browse": 0, "filter-role": 1, "view-card": 2, "send-connect": 3 },
+    "discover.connected": { "view-connections": 0, "schedule-meeting": 1, "start-chat": 2, "view-profile": 3 },
+    "discover.requests": { "view-request": 0, "accept-decline": 1, "view-sender": 2, "accepted-move": 3 },
+    "schedule.meetings": { "toggle-day": 0, "view-counts": 1, "view-details": 2, "card-action": 3 },
+    "schedule.reschedule": { "view-slots": 0, "both-free": 1, "busy-slot": 2, "confirm-time": 3 },
+    "chat.connected": { "view-conversations": 0, "unread-badge": 1, "meeting-status": 2, "schedule-from-chat": 3 },
+    "chat.requests": { "view-chat-request": 0, "accept-chat": 1, "decline-chat": 2, "view-time": 3 },
+    "chat.individual": { "send-message": 0, "meeting-card": 1, "manage-meeting": 2, "reschedule-chat": 3, "view-status": 4 },
+    "profile": { "view-info": 0, "view-interests": 1, "edit-profile": 2, "qr-code": 3 },
+  };
+  const [highlightBullet, setHighlightBullet] = useState(null);
+  const highlightTimer = React.useRef(null);
+  const handleAction = React.useCallback((actionName) => {
+    const map = ACTION_MAP[infoKey];
+    if (!map || map[actionName] === undefined) return;
+    const idx = map[actionName];
+    if (highlightTimer.current) clearTimeout(highlightTimer.current);
+    setHighlightBullet(idx);
+    highlightTimer.current = setTimeout(() => setHighlightBullet(null), 2000);
+  }, [infoKey]);
   const screens = { home: HomeScreen, discover: DiscoverScreen, schedule: ScheduleScreen, chat: ChatScreen, profile: ProfileScreen };
   const Screen = screens[screen];
   return (
     <div style={{ minHeight: "100vh", background: "#12121E", display: "flex", flexDirection: "column", alignItems: "center", padding: "30px 2%", fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif", boxSizing: "border-box" }}>
       <ScrollHideStyle />
-      <style>{`@media(max-width:500px){.nbx-phone-wrap{width:100%!important;}.nbx-phone-wrap .nbx-phone{transform-origin:top center;}} @media(min-width:501px){.nbx-phone-wrap{width:375px;}}`}</style>
+      <style>{`
+        @media(max-width:500px){.nbx-phone-wrap{width:100%!important;}.nbx-phone-wrap .nbx-phone{transform-origin:top center;}}
+        @media(min-width:501px){.nbx-phone-wrap{width:375px;}}
+        @keyframes nbxPanelFadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .nbx-panel-anim { animation: nbxPanelFadeIn 0.4s ease-out; }
+        @keyframes nbxBulletHighlight { 0% { color: #7A7A8E; } 10% { color: #C8C8D4; } 90% { color: #C8C8D4; } 100% { color: #7A7A8E; } }
+        .nbx-bullet-highlight { animation: nbxBulletHighlight 2s ease-in-out; }
+      `}</style>
       <div style={{ textAlign: "center", marginBottom: 28 }}>
         <div style={{ color: "#E8E8EF", fontSize: 26, fontWeight: 800 }}>NBX Connect</div>
         <div style={{ color: "#6B6B82", fontSize: 14, marginTop: 4 }}>Networking App · Mobile UX Design</div>
@@ -1386,10 +1542,38 @@ export default function App() {
           <button key={s.id} onClick={() => navigate(s.id)} style={{ padding: "8px 20px", borderRadius: 24, border: "none", cursor: "pointer", background: screen === s.id ? "#EA0030" : "rgba(255,255,255,0.06)", color: screen === s.id ? "#fff" : "#9E9EB3", fontSize: 13, fontWeight: 700 }}>{s.label}</button>
         ))}
       </div>
-      <div className="nbx-phone-wrap" style={{ width: 375, maxWidth: "100%", height: 812 * phoneScale }}><div className="nbx-phone" ref={phoneRef} style={{ width: 375, height: 812, borderRadius: 44, overflow: "hidden", background: C.bg, position: "relative", boxShadow: "0 25px 60px rgba(0,0,0,0.5), 0 0 0 3px rgba(255,255,255,0.08)", transform: `scale(${phoneScale})`, transformOrigin: "top center" }}>
-        <Screen onNav={navigate} chatTabHint={chatTabHint} profileData={profileData} setProfileData={setProfileData} />
-      </div></div>
-      <a href="https://beawhale.io" target="_blank" rel="noopener noreferrer" style={{ color: "#4A4A5C", fontSize: 11, marginTop: 20, textDecoration: "none", cursor: "pointer" }}>Built By BeAWhale</a>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: showPanel ? 60 : 0, justifyContent: "center", width: "100%", maxWidth: 900 }}>
+        <div className="nbx-phone-wrap" style={{ width: 375, maxWidth: showPanel ? 375 : "100%", flexShrink: 0, height: 812 * phoneScale }}><div className="nbx-phone" ref={phoneRef} style={{ width: 375, height: 812, borderRadius: 44, overflow: "hidden", background: C.bg, position: "relative", boxShadow: "0 25px 60px rgba(0,0,0,0.5), 0 0 0 3px rgba(255,255,255,0.08)", transform: `scale(${phoneScale})`, transformOrigin: "top center" }}>
+          <Screen onNav={navigate} onSubTab={setSubTab} onAction={handleAction} chatTabHint={chatTabHint} openChatHint={openChatHint} profileData={profileData} setProfileData={setProfileData} />
+        </div></div>
+        {showPanel && (
+          <div className={panelAnim ? "nbx-panel-anim" : ""} key={infoKey} style={{ flex: 1, paddingTop: 80, maxWidth: 380 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#EA0030", flexShrink: 0 }} />
+              <div style={{ color: "#E8E8EF", fontSize: 28, fontWeight: 800, lineHeight: 1.2 }}>{info.title}</div>
+            </div>
+            <div style={{ color: "#9999A6", fontSize: 15, lineHeight: 1.7, paddingLeft: 22, marginBottom: 20 }}>{info.desc}</div>
+            {info.bullets && (
+              <div style={{ paddingLeft: 22 }}>
+                {info.bullets.map((b, i) => {
+                  const isHl = highlightBullet === i;
+                  return (
+                    <div key={i} className={isHl ? "nbx-bullet-highlight" : ""} style={{ display: "flex", gap: 10, marginBottom: 10, alignItems: "flex-start", transition: "color 0.5s ease" }}>
+                      <div style={{ width: 6, height: 6, borderRadius: "50%", background: isHl ? "#EA0030" : "#EA0030", flexShrink: 0, marginTop: 7, opacity: isHl ? 1 : 0.6, transition: "opacity 0.5s ease" }} />
+                      <div style={{ color: isHl ? "#C8C8D4" : "#7A7A8E", fontSize: 13.5, lineHeight: 1.6, transition: "color 0.5s ease" }}>{b}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      <div style={{ display: "flex", justifyContent: "center", width: "100%", maxWidth: 900 }}>
+        <div style={{ width: showPanel ? 375 : "100%", maxWidth: showPanel ? 375 : "100%", flexShrink: 0, textAlign: "center" }}>
+          <a href="https://beawhale.io" target="_blank" rel="noopener noreferrer" style={{ color: "#4A4A5C", fontSize: 11, marginTop: 20, display: "inline-block", textDecoration: "none", cursor: "pointer" }}>Built By BeAWhale</a>
+        </div>
+      </div>
     </div>
   );
 }

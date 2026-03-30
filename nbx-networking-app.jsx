@@ -1458,7 +1458,7 @@ export default function App() {
   const [subTab, setSubTab] = useState(null);
   const [chatTabHint, setChatTabHint] = useState(null);
   const [profileData, setProfileData] = useState({
-    name: "Gus Klisauskas",
+    name: "Gus Klaison",
     title: "Founder & CEO",
     org: "BeAWhale",
     bio: "Building Web3 products that people love. Blockchain design & dev agency. Open to partnerships.",
@@ -1569,10 +1569,11 @@ export default function App() {
           </div>
         )}
       </div>
-      <div style={{ display: "flex", justifyContent: "center", width: "100%", maxWidth: 900 }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: showPanel ? 60 : 0, justifyContent: "center", width: "100%", maxWidth: 900 }}>
         <div style={{ width: showPanel ? 375 : "100%", maxWidth: showPanel ? 375 : "100%", flexShrink: 0, textAlign: "center" }}>
           <a href="https://beawhale.io" target="_blank" rel="noopener noreferrer" style={{ color: "#4A4A5C", fontSize: 11, marginTop: 20, display: "inline-block", textDecoration: "none", cursor: "pointer" }}>Built By BeAWhale</a>
         </div>
+        {showPanel && <div style={{ flex: 1, maxWidth: 380 }} />}
       </div>
     </div>
   );
